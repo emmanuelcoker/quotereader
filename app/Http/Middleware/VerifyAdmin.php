@@ -21,8 +21,6 @@ class VerifyAdmin
         if (Auth::user() &&  Auth::user()->role_id == 1) {
             return $next($request);
         }
-        return response()->json([
-            'message'   =>  'Unauthorized' 
-        ], 401);
+        return response()->json('Unauthorized Access', 401);
     }
 }

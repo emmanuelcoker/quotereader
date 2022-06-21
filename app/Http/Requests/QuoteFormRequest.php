@@ -14,10 +14,10 @@ class QuoteFormRequest extends FormRequest
      */
     public function authorize()
     {
-        if(Auth::user()->role_id == 1){
-            return true;
-        }
-        return false;
+        // if(Auth::user()->role_id == 1){
+        //     return true;
+        // }
+        return true;
     }
 
     /**
@@ -31,7 +31,7 @@ class QuoteFormRequest extends FormRequest
             'author_id'     =>  'required|numeric',
             'category_id'   =>  'required|numeric',
             'content'       =>  'required|string|min:10',
-            'scheduled_date' => 'nullable|after:today' 
+            'scheduled_date' => 'nullable' 
         ];
     }
 

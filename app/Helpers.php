@@ -27,7 +27,7 @@ class Helpers
                 'name' => $request->name,
                 'email'=> $request->email,
                 'password' => Hash::make($request->password),
-                'role_id' => 1
+                'role_id' => 2
             ]);
 
         return $user;
@@ -100,7 +100,7 @@ class Helpers
     }
 
     //response with message 
-    public static function messageResponse($message){
+    public static function messageResponse($message = 'Success'){
         return response()->json([
             'message' => $message
         ], 200);
@@ -122,22 +122,32 @@ class Helpers
     //search helper 
     public static function search($search_val, $column_name, $model_name){
         if($model_name == 'category'){
+            if($search_val == ''){
+                return Category::latest()->paginate(20);
+            }
             $data = Category::latest()
-                        ->where($column_name, 'LIKE', $search_val.'%')
+                        ->where($column_name, 'LIKE', '%'.$search_val.'%')
                         ->paginate(20);
             return $data;
         }
 
         if($model_name == 'author'){
+            if($search_val == ''){
+                return Author::latest()->paginate(20);
+            }
             $data = Author::with('quotes')
                         ->latest()
-                        ->where($column_name, 'LIKE', $search_val.'%')
+                        ->where($column_name, 'LIKE', '%'.$search_val.'%')
                         ->paginate(40);
             return $data;
         }
 
         if($model_name == 'quote'){
-            $data = Quote::with('authors')
+            if($search_val == ''){
+                return Quote::with('authors', 'categories')
+                                ->latest()->paginate(20);
+            }
+            $data = Quote::with('authors', 'categories')
                         ->latest()
                         ->where($column_name, 'LIKE', '%'.$search_val.'%')
                         ->paginate(40);
@@ -149,11 +159,12 @@ class Helpers
     }
 
     //check if the data is empty
-    public static function checkIfEmpty($data){
+    public static function checkIfEmpty($data): bool
+    {
         if(empty($data) || sizeof(explode(' ', $data)) == 0  || is_null($data)){
-            return response()->json(['message'=> 'No data found']);
+            return true;
         }
-        return true;
+        return false;
     }
 
 

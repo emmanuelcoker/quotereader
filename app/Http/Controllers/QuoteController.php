@@ -11,11 +11,16 @@ use App\Models\Quote;
 class QuoteController extends Controller
 {
 
-    //show all quotes 
+    //show all quotes for admin page
     public function allQuotes(){
         $quotes = Quote::with('authors', 'categories')
-                    ->latest()->paginate(40);
-        return Helpers::dataResponse($quotes, 200);
+                    ->latest()
+                    ->paginate(40);
+
+        //return Helpers::dataResponse($quotes, 200);
+        return view('admin.quotes.quotes')->with([
+            'quotes' => $quotes,
+        ]);
     }
 
 
@@ -28,26 +33,15 @@ class QuoteController extends Controller
 
             //create new quote
             $newQuote = Helpers::newQuote($request);
-
+            
             return Helpers::dataResponse($newQuote, 201);
 
         } catch (\Throwable $th) {
-            Helpers::throwError($th);
+           return Helpers::throwError($th);
         }
     }
     
 
-    //find quote by id 
-    public function findQuote(SearchRequest $request){
-        try{
-            $validated = $request->validated();
-            $quote = Helpers::search($request->search_val, 'content', 'quote');
-            return Helpers::dataResponse($quote, 200); 
-        }catch(\Throwable $th){
-            Helpers::throwError($th);
-        }
-        
-    }
 
     //update quote
     public function update(QuoteFormRequest $request, $id){
@@ -58,10 +52,10 @@ class QuoteController extends Controller
             $quote = Quote::findOrFail($id);
           
             $quote->update($request->all());
-            return Helpers::dataResponse($author, 200);
+            return Helpers::dataResponse($quote, 200);
 
         } catch (\Throwable $th) {
-            Helpers::throwError($th);
+            return Helpers::throwError($th);
         }
     }
 
@@ -73,7 +67,7 @@ class QuoteController extends Controller
             $quote->delete();
             return Helpers::successResponse();
         }catch(\Throwable $th){
-            Helpers::throwError($th);
+            return Helpers::throwError($th);
         }
     }
     
